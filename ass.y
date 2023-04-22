@@ -1,6 +1,7 @@
 %{
     #include <stdio.h>   
     #include <stdlib.h> 
+    #include "ass.h"
     extern FILE *yyin;
     char curr_type[100];
 %}
@@ -16,8 +17,8 @@
 s: stmt_list
 ;
 //we need to get the type which is in the parent one
-identifier_list: IDENTIFIER CM identifier_list {add_symbol($1,0,curr_type);}
-| IDENTIFIER {add_symbol($1,0,curr_type);}
+identifier_list: IDENTIFIER CM identifier_list
+| IDENTIFIER
 ;
 
 decl_stmt: TYPE identifier_list SC
@@ -109,10 +110,15 @@ value: IDENTIFIER
 
 void main(){
     FILE *fp; int i;
-   fp=fopen("input.txt","r");
-   yyin=fp;
+    fp=fopen("input.txt","r");
+    yyin=fp;
     yyparse();
-   print_table();
+    struct node* Parent = (struct node*) malloc(sizeof(struct node));
+    Parent->curr_symbols =0;
+    Parent->num_children=0;
+      Parent->parent = NULL;
+    add_symbol(Parent,"Test","1D-float",10,5);
+    print_node(Parent);
     exit(0);
 }
 

@@ -1,7 +1,7 @@
 %option noyywrap
 %{
 #include "y.tab.h"
-#include "ass.h"
+#include <string.h>
   int printfc =0;
   int scanfc =0;
 %}
