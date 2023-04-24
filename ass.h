@@ -77,10 +77,18 @@ int lookup_symbol(struct node *a, char *name)
 void add_symbol(struct node *a, char *name, char *type, int dim1, int dim2)
 {
     int num = a->curr_symbols;
+    for (int i = 0; i < num; i++)
+    {
+        if (strcmp(a->symbols[i].name, name) == 0)
+        {
+            printf("Symbol Already Initialized\n");
+            exit(0);
+        }
+    }
     if (num >= MAX)
     {
-        fprintf(stderr, "Symbol table is full\n");
-        exit(EXIT_FAILURE);
+        printf("Symbol table is full\n");
+        exit(0);
     }
     a->symbols[num].name = strdup(name);
     a->symbols[num].type = strdup(type);
