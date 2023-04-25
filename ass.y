@@ -9,59 +9,97 @@
 //assuming while has only expression and not assignment in grammer
 // if and else is only there...no elseif and if needs statements in curly braces
 //syntax error 0 means semicolon missing and 1 is for bracket
-%union {char *strval; int ival; char ch;}
-%token <ival> INTEGER <strval> TYPE <strval> KEYWORD <strval> IDENTIFIER <strval> CHARACTER <ch> OPERATOR <ch> PUNCTUATOR
-%token FLOAT NL EQ SC CM OB CB OC CC IF WH SW FR ELSE CL CASE DF
+%union {char *strval; int ival; char ch; float fval;}
+%token <ival> INTC <strval> TYPE <strval> VAR <ch> CHARC <fval> FLOATC 
+%token PL MIN MUL DIV MOD NOT LT GT EQ AND OR SC CM OB CB OC CC IF WHILE SW FOR ELSE CL CASE DF OS CS VOID BREAK CONTINUE RET
 
 %%
-s: stmt_list
-;
-//we need to get the type which is in the parent one
-identifier_list: IDENTIFIER CM identifier_list
-| IDENTIFIER
-;
 
-decl_stmt: TYPE identifier_list SC
-| TYPE identifier_list {syntax_error(0);}
-;
+p : stmt_list
+  ;
 
-expr_stmt : value OPERATOR expr_stmt
-| OB expr_stmt CB
-| OB expr_stmt {syntax_error(1);}
-| expr_stmt CB {syntax_error(1);}
-| value
-;
+stmt_list : simple_stmt stmt_list
+          | comp_stmt stmt_list
+          ;
 
-assign_stmt : IDENTIFIER EQ expr_stmt SC
-| IDENTIFIER EQ expr_stmt {syntax_error(0);}
-;
+stmt : simple_stmt
+     | comp_stmt
+     | iter_stmt
+     | cntl_stmt
+     ;
 
-stmt_list: statement stmt_list
-|
-;
+simple_stmt : decl_stmt SC 
+            | asg_stmt SC
+            | expr SC
+            | jump_stmt SC
+            | SC
+            ;
 
-statement: decl_stmt
-| assign_stmt
-| if_stmt
-| while_stmt
-| comp_stmt
-;
+comp_stmt : OC stmt_list CC
+          ;
 
-switch_list: SW OB expr_stmt CB OC cases_list CC
-| SW OB expr_stmt CB OC cases_list {syntax_error(1);}
-| SW OB expr_stmt CB cases_list CC {syntax_error(1);}
-| SW OB expr_stmt CB cases_list {syntax_error(1);}
-| SW OB expr_stmt OC cases_list CC {syntax_error(1);}
-| SW OB expr_stmt OC cases_list {syntax_error(1);}
-| SW OB expr_stmt cases_list CC {syntax_error(1);}
-| SW OB expr_stmt cases_list {syntax_error(1);}
-| SW expr_stmt CB OC cases_list CC {syntax_error(1);}
-| SW expr_stmt CB OC cases_list {syntax_error(1);}
-| SW expr_stmt CB cases_list CC {syntax_error(1);}
-| SW expr_stmt CB cases_list {syntax_error(1);}
-| SW expr_stmt OC cases_list CC {syntax_error(1);}
-| SW expr_stmt OC cases_list {syntax_error(1);}
-| SW expr_stmt cases_list CC {syntax_error(1);}
+iter_stmt : for_stmt
+          | while_stmt
+          ;
+
+cntl_stmt : if_stmt
+          | switch_list
+          ;
+
+jump_stmt : BREAK
+          | CONTINUE
+          | RET
+          | RET expr 
+          ;
+
+decl_stmt : TYPE init_list
+          ;
+
+init_list : init_stmt 
+          | init_stmt CM init_list
+          ;
+
+init_stmt : VAR
+          | VAR OS expr CS
+          | VAR OS expr CS OS expr CS
+          | decl_asg
+          ;
+
+decl_asg : VAR EQ expr
+         | VAR OS expr CS EQ expr
+         | VAR OS expr CS OS expr CS EQ expr
+         | VAR OS CS EQ expr
+         | VAR OS CS OS CS EQ expr
+         ; 
+
+asg_stmt : VAR EQ expr
+         | VAR OS expr CS EQ expr
+         | VAR OS CS EQ expr
+         | VAR OS expr CS OS expr CS EQ expr
+         | VAR OS expr CS OS CS EQ expr
+         ;
+
+expr : expr PL expr
+     | expr MIN expr
+     | expr MUL expr
+     | expr DIV expr
+     | expr MOD expr
+     | expr EQ EQ expr
+     | expr NOT EQ expr
+     | expr LT expr
+     | expr LT EQ expr
+     | expr GT expr
+     | expr GT EQ expr
+     | expr AND expr
+     | expr OR expr
+     | MIN expr
+     | NOT expr
+     | VAR | VAR OS expr CS | VAR OS expr CS | VAR OS expr CS OS expr CS | VAR OS expr CS OS CS
+     | constant 
+     | func_call
+     ;
+
+switch_list: SW OB expr CB OC cases_list CC
 ;
 
 cases_list: single_case cases_list 
@@ -75,36 +113,41 @@ single_case: CASE constant CL stmt_list
 default_stmt : DF CL stmt_list
 ;
 
-constant: INTEGER
-| FLOAT
-| CHARACTER
+constant: INTC
+| FLOATC
+| CHARC
 ;
 
-if_stmt: IF OB expr_stmt CB comp_stmt
-|IF expr_stmt CB comp_stmt {syntax_error(1);}
-|IF OB expr_stmt comp_stmt {syntax_error(1);}
-|IF expr_stmt comp_stmt {syntax_error(1);}
-|IF OB expr_stmt CB comp_stmt ELSE comp_stmt
-|IF expr_stmt CB comp_stmt ELSE comp_stmt {syntax_error(1);}
-|IF OB expr_stmt comp_stmt ELSE comp_stmt {syntax_error(1);}
-|IF expr_stmt comp_stmt ELSE comp_stmt {syntax_error(1);}
-;
+if_stmt : IF OB expr CB stmt
+        | IF OB expr CB stmt ELSE stmt 
+        ;
 
-while_stmt: WH OB expr_stmt CB comp_stmt
-|WH expr_stmt CB comp_stmt {syntax_error(1);}
-|WH OB expr_stmt comp_stmt {syntax_error(1);}
-|WH expr_stmt comp_stmt {syntax_error(1);}
-;
 
-comp_stmt : OC stmt_list CC
-| OC stmt_list {syntax_error(1);}
-;
+for_stmt : FOR OB for_init SC expr SC asg_stmt CB stmt
+         ;
 
-value: IDENTIFIER
-| INTEGER
-| FLOAT
-| CHARACTER
-;
+for_init : decl_stmt
+         | asg_stmt
+         ;
+
+while_stmt : WHILE OB expr CB stmt
+           ;
+
+ret_type : TYPE | VOID
+         ;
+
+func_def : ret_type VAR OB param_list CB comp_stmt
+         ;
+param_list : TYPE VAR
+           | TYPE VAR CM param_list
+           ;
+
+func_call : VAR OB val_list CB
+          ;
+
+val_list : expr 
+         | expr CM val_list
+         ;
 %%
 
 
