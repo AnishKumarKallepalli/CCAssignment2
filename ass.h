@@ -38,8 +38,8 @@ struct node *add_child(struct node *parent)
     newNode->parent = parent;
     return newNode;
 }
-// For merge they must be having same parent
-struct node *merge_two(struct node *left,struct node *right)
+
+struct node *merge_two(struct node *left,struct node *right,struct node *parent)
 {
     struct node *merged = (struct node *)malloc(sizeof(struct node));
     if (((left->num_children)+(right->num_children)) >= MAX)
@@ -67,8 +67,8 @@ struct node *merge_two(struct node *left,struct node *right)
     {
         merged->symbols[i]=right->symbols[i-left->curr_symbols];
     }
-    //Check this part
-    merged->parent = left->parent;
+
+    merged->parent = parent;
     return merged;
 }
 
