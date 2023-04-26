@@ -38,6 +38,39 @@ struct node *add_child(struct node *parent)
     newNode->parent = parent;
     return newNode;
 }
+// For merge they must be having same parent
+struct node *merge_two(struct node *left,struct node *right)
+{
+    struct node *merged = (struct node *)malloc(sizeof(struct node));
+    if (((left->num_children)+(right->num_children)) >= MAX)
+    {
+        fprintf(stderr, "Too many children to merge\n");
+        exit(EXIT_FAILURE);
+    }
+    merged->num_children=left->num_children + right->num_children;
+    merged->curr_symbols = left->curr_symbols + right->curr_symbols;
+
+    for(int i=0;i<left->num_children;i++)
+    {
+        merged->children[i]=left->children[i];
+    }
+    for(int i=left->num_children;i<merged->num_children;i++)
+    {
+        merged->children[i]=right->children[i-left->num_children];
+    }
+
+    for(int i=0;i<left->curr_symbols;i++)
+    {
+        merged->symbols[i]=left->symbols[i];
+    }
+    for(int i=left->curr_symbols;i<merged->curr_symbols;i++)
+    {
+        merged->symbols[i]=right->symbols[i-left->curr_symbols];
+    }
+    //Check this part
+    merged->parent = left->parent;
+    return merged;
+}
 
 struct node *create_block()
 {
