@@ -9,9 +9,11 @@
 //assuming while has only expression and not assignment in grammer
 // if and else is only there...no elseif and if needs statements in curly braces
 //syntax error 0 means semicolon missing and 1 is for bracket
-%union {char *strval; int ival; char ch;}
-%token <ival> INTEGER <strval> TYPE <strval> KEYWORD <strval> IDENTIFIER <strval> CHARACTER <ch> OPERATOR <ch> PUNCTUATOR
-%token FLOAT NL EQ SC CM OB CB OC CC IF WH SW FR ELSE CL CASE DF
+%union {char *strval; int ival; char ch; float fval;}
+%token <ival> INTEGER <strval> KEYWORD <strval> IDENTIFIER <strval> CHARACTER <ch> OPERATOR <ch> PUNCTUATOR
+%token FLOAT NL EQ SC CM OB CB OC CC IF WH SW FR ELSE CL CASE DF WHILE
+%token <ival> INTC <strval> TYPE <strval> VAR <ch> CHARC <fval> FLOATC 
+%token PL MIN MUL DIV MOD NOT LT GT AND OR FOR OS CS VOID BREAK CONTINUE RET
 
 %%
 s: stmt_list
@@ -123,7 +125,7 @@ void main(){
 }
 
 void yyerror(){
-    printf("error\n");
+    printf("Error\n");
     exit(0);
 }
 
