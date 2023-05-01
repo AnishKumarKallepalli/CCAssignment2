@@ -51,7 +51,7 @@ identifier  {letter}({letter}|{digit})*
 <CHECKS>"," {trycount++;BEGIN TRYS;}
 <TRYS>{and_check}{identifier} {BEGIN CHECKS;}
 <TRYS>" " {}
-<TRYS>")" {printf("Invalid printf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0;BEGIN INITIAL;}
+<TRYS>")" {printf("Invalid scanf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0;BEGIN INITIAL;}
 <TRYS>. {printf("Invalid scanf statement on line number: %d\n",linenumber); count=0;trycount=0;trycheck=0;BEGIN TEMP;}
 <CHECKS>")" {if(trycount==count&&trycheck==1){count=0;trycount=0;scanfc++;trycheck=0;BEGIN INITIAL;}else{printf("Invalid scanf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0; BEGIN INITIAL;}}
 <CHECKS>" " {}
