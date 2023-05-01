@@ -13,7 +13,7 @@
 %token <ival> INTEGER <strval> KEYWORD <strval> IDENTIFIER <strval> CHARACTER <ch> OPERATOR <ch> PUNCTUATOR
 %token FLOAT NL EQ SC CM OB CB OC CC IF WH SW FR ELSE CL CASE DF WHILE
 %token <ival> INTC <strval> TYPE <strval> VAR <ch> CHARC <fval> FLOATC 
-%token PL MIN MUL DIV MOD NOT LT GT AND OR FOR OS CS VOID BREAK CONTINUE RET DEQ NEQ LEQ GEQ
+%token PL MIN MUL DIV MOD NOT LT GT AND OR FOR OS CS VOID BREAK CONTINUE RET DEQ NEQ LEQ GEQ INT CHAR
 
 %%
 //assignment statements for arrays must have row and column
