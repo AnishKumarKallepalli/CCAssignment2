@@ -78,6 +78,10 @@ types float|char|int
 "||" return OR;
 "[" return OS;
 "]" return CS;
+"==" return DEQ;
+"!=" return NEQ;
+"<=" return LEQ;
+">=" return GEQ;
 "=" return EQ;
 "{" return OC;
 "}" return CC;
