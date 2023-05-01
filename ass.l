@@ -9,6 +9,8 @@
   int trycount=0;
   int linenumber=1;
 %}
+%s TRYSC
+%s TRYMC
 letter [a-zA-Z_]
 digit [0-9]
 integer [0]|[1-9][0-9]*
@@ -18,6 +20,13 @@ string \"([^\"\\]|\\.)*\"
 keywords auto|break|case|const|continue|default|do|double|else|enum|extern|goto|long|register|return|short|signed|sizeof|static|struct|typedef|union|unsigned|void|volatile
 identifier  {letter}({letter}|{digit})*
 %%
+<INITIAL>"//" {BEGIN TRYSC;}
+<TRYSC>. {}
+<TRYSC>\n {BEGIN INITIAL;}
+<INITIAL>"/*" {BEGIN TRYMC;}
+<TRYMC>. {}
+<TRYMC>\n {}
+<TRYMC>"*/" {BEGIN INITIAL;}
 <INITIAL>"int" return INT;
 <INITIAL>"printf" return PRINT;
 <INITIAL>"char" return CHAR;
@@ -62,6 +71,11 @@ identifier  {letter}({letter}|{digit})*
  strcpy(yylval.strval, yytext);
     return STR;
 }
+<INITIAL>{keywords} {
+  yylval.strval = malloc(sizeof(yytext)+5); 
+ strcpy(yylval.strval, yytext);
+    return KEYWORD;
+}
 <INITIAL>{identifier} {
     yylval.strval = malloc(sizeof(yytext)+5); 
  strcpy(yylval.strval, yytext);
@@ -83,5 +97,5 @@ identifier  {letter}({letter}|{digit})*
 \r {}
 \t {}
 \n {linenumber++;}
-<<EOF>>  {printf("Number of valid printf statement %d\n",printfc);printf("Number of valid scanf statement %d\n",scanfc); return END;}
+<<EOF>>  {return END;}
 %%
