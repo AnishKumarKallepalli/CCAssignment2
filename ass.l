@@ -12,7 +12,7 @@ float ([0]|[1-9][0-9]*)\.[0-9]+([Ee][+-]?[0-9]+)?
 character "'"."'"
 operators [+\-*\/%!<>"==""||""&&"]
 punctuators [(){}[\].,] 
-keywords auto|break|case|const|continue|default|do|double|else|enum|extern|goto|long|register|return|short|signed|sizeof|static|struct|typedef|union|unsigned|void|volatile
+keywords switch|auto|break|case|const|continue|default|do|double|else|enum|extern|goto|long|register|return|short|signed|sizeof|static|struct|typedef|union|unsigned|void|volatile
 identifier  {letter}({letter}|{digit})*
 types float|char|int
 %%
