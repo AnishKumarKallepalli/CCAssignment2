@@ -25,7 +25,6 @@ character "'"."'"
 punctuators [(){}[\].,] 
 keywords auto|break|case|const|continue|default|do|double|else|enum|extern|goto|long|register|return|short|signed|sizeof|static|struct|typedef|union|unsigned|void|volatile
 identifier  {letter}({letter}|{digit})*
-types float|char|int
 %%
 <INITIAL>"printf(\"" {BEGIN PRINTCHECK;}
 <PRINTCHECK>"%d" {count++;trycheck=1;}
@@ -58,6 +57,9 @@ types float|char|int
 <CHECKS>")" {if(trycount==count&&trycheck==1){count=0;trycount=0;scanfc++;trycheck=0;BEGIN INITIAL;}else{printf("Invalid scanf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0; BEGIN INITIAL;}}
 <CHECKS>" " {}
 <CHECKS>. {printf("Invalid scanf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0; BEGIN TEMP;}
+<INITIAL>"int" return INT;
+<INITIAL>"char" return CHAR;
+<INITIAL>"float" return FLOAT;
 <INITIAL>"if" return IF;
 <INITIAL>"case" return CASE;
 <INITIAL>"default" return DF;
@@ -93,11 +95,6 @@ types float|char|int
 <INITIAL>"," return CM;
 <INITIAL>";" return SC;
 <INITIAL>":" return CL;
-<INITIAL>{types} {
-  yylval.strval = malloc(sizeof(yytext)+5); 
- strcpy(yylval.strval, yytext);
- return TYPE;
-}
 <INITIAL>{keywords} {
   yylval.strval = malloc(sizeof(yytext)+5); 
  strcpy(yylval.strval, yytext);
@@ -106,19 +103,19 @@ types float|char|int
 <INITIAL>{identifier} {
     yylval.strval = malloc(sizeof(yytext)+5); 
  strcpy(yylval.strval, yytext);
- return IDENTIFIER;
+ return VAR;
 }
 <INITIAL>{integer} {
       yylval.ival = atoi(yytext);
- return INTEGER;
+ return INTC;
 }
 <INITIAL>{character} {
-   yylval.strval = malloc(sizeof(yytext)+5); 
- strcpy(yylval.strval, yytext);
- return CHARACTER;
+   yylval.ch = yytext[0]; 
+ return CHARC;
 }
 <INITIAL>{float} {
- return FLOAT;
+   yylval.fval = atof(yytext);
+ return FLOATC;
 }
 <INITIAL>{punctuators} {
   yylval.ch = yytext[0];
