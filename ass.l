@@ -22,7 +22,6 @@ and_check [&]
 integer [0]|[1-9][0-9]*
 float ([0]|[1-9][0-9]*)\.[0-9]+([Ee][+-]?[0-9]+)?
 character "'"."'"
-punctuators [(){}[\].,] 
 keywords auto|break|case|const|continue|default|do|double|else|enum|extern|goto|long|register|return|short|signed|sizeof|static|struct|typedef|union|unsigned|void|volatile
 identifier  {letter}({letter}|{digit})*
 %%
