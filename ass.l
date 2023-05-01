@@ -9,54 +9,26 @@
   int trycount=0;
   int linenumber=1;
 %}
-%s PRINTCHECK 
-%s CHECKP
-%s CHECKS
-%s TRYP
-%s TRYS
-%s SCANCHECK 
-%s TEMP
+%s TRYSC
+%s TRYMC
 letter [a-zA-Z_]
 digit [0-9]
-and_check [&]
 integer [0]|[1-9][0-9]*
 float ([0]|[1-9][0-9]*)\.[0-9]+([Ee][+-]?[0-9]+)?
 character "'"."'"
+string \"([^\"\\]|\\.)*\"
 keywords auto|break|case|const|continue|default|do|double|else|enum|extern|goto|long|register|return|short|signed|sizeof|static|struct|typedef|union|unsigned|void|volatile
 identifier  {letter}({letter}|{digit})*
 %%
-<INITIAL>"printf(\"" {BEGIN PRINTCHECK;}
-<PRINTCHECK>"%d" {count++;trycheck=1;}
-<PRINTCHECK>"%c" {count++;trycheck=1;}
-<PRINTCHECK>"%f" {count++;trycheck=1;}
-<PRINTCHECK>"\"" {BEGIN CHECKP;}
-<PRINTCHECK>. {trycheck=1;}
-<CHECKP>"," {trycount++;BEGIN TRYP;}
-<TRYP>{identifier} {BEGIN CHECKP;}
-<TRYP>" " {}
-<TRYP>")" {printf("Invalid printf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0;BEGIN INITIAL;}
-<TRYP>. {printf("Invalid printf statement on line number: %d\n",linenumber); count=0;trycount=0;trycheck=0;BEGIN TEMP;}
-<CHECKP>")" {if(trycount==count&&trycheck==1){count=0;trycount=0;trycheck=0;printfc++;BEGIN INITIAL;}else{printf("Invalid printf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0; BEGIN INITIAL;}}
-<CHECKP>" " {}
-<CHECKP>. {printf("Invalid printf statement on line number: %d\n",linenumber); count=0;trycount=0;trycheck=0;BEGIN TEMP;}
-<TEMP>")" {BEGIN INITIAL;}
-<TEMP>. {}
-<INITIAL>"scanf(\"" {BEGIN SCANCHECK;}
-<SCANCHECK>"%d" {count++;trycheck=1;}
-<SCANCHECK>"%c" {count++;trycheck=1;}
-<SCANCHECK>"%f" {count++;trycheck=1;}
-<SCANCHECK>"\"" {BEGIN CHECKS;}
-<SCANCHECK>" " {}
-<SCANCHECK>. {printf("Invalid scanf statement on line number: %d\n",linenumber); count=0;trycount=0;trycheck=0;BEGIN TEMP;}
-<CHECKS>"," {trycount++;BEGIN TRYS;}
-<TRYS>{and_check}{identifier} {BEGIN CHECKS;}
-<TRYS>" " {}
-<TRYS>")" {printf("Invalid printf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0;BEGIN INITIAL;}
-<TRYS>. {printf("Invalid scanf statement on line number: %d\n",linenumber); count=0;trycount=0;trycheck=0;BEGIN TEMP;}
-<CHECKS>")" {if(trycount==count&&trycheck==1){count=0;trycount=0;scanfc++;trycheck=0;BEGIN INITIAL;}else{printf("Invalid scanf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0; BEGIN INITIAL;}}
-<CHECKS>" " {}
-<CHECKS>. {printf("Invalid scanf statement on line number: %d\n",linenumber);count=0;trycount=0;trycheck=0; BEGIN TEMP;}
+<INITIAL>"//" {BEGIN TRYSC;}
+<TRYSC>. {}
+<TRYSC>\n {BEGIN INITIAL;}
+<INITIAL>"/*" {BEGIN TRYMC;}
+<TRYMC>. {}
+<TRYMC>\n {}
+<TRYMC>"*/" {BEGIN INITIAL;}
 <INITIAL>"int" return INT;
+<INITIAL>"printf" return PRINT;
 <INITIAL>"char" return CHAR;
 <INITIAL>"float" return FLOAT;
 <INITIAL>"if" return IF;
@@ -94,6 +66,11 @@ identifier  {letter}({letter}|{digit})*
 <INITIAL>"," return CM;
 <INITIAL>";" return SC;
 <INITIAL>":" return CL;
+<INITIAL>{string} {
+  yylval.strval = malloc(sizeof(yytext)+5); 
+ strcpy(yylval.strval, yytext);
+    return STR;
+}
 <INITIAL>{keywords} {
   yylval.strval = malloc(sizeof(yytext)+5); 
  strcpy(yylval.strval, yytext);
@@ -116,6 +93,9 @@ identifier  {letter}({letter}|{digit})*
    yylval.fval = atof(yytext);
  return FLOATC;
 }
+<INITIAL>" " {}
+\r {}
+\t {}
 \n {linenumber++;}
-<<EOF>>  {printf("Number of valid printf statement %d\n",printfc);printf("Number of valid scanf statement %d\n",scanfc); return 0;}
+<<EOF>>  {return END;}
 %%

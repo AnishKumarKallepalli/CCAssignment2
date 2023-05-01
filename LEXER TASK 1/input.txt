@@ -1,0 +1,9 @@
+void main()
+{
+    int b = 5;
+    printf("hello%d");
+    printf("hello%d",num);
+      scanf("hello%d",num);
+      scanf("%d",num);
+      scanf("%d",&num);
+}

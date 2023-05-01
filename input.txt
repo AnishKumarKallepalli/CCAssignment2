@@ -1,0 +1,42 @@
+float arr1(par1)
+{
+    a = 3;
+}
+void main()
+{
+    int b;
+    char c = c;
+    scanf("%d",&num);
+    printf("HI");
+    for(i = 0;i<1000;i = i+1)
+    { int y;
+    y = y-c;
+    y = y/2;
+    y = y*2;
+    y = y-2;
+
+    b=0;
+
+        if(i == 1000)
+        {
+            for(i = 100;i<=20;i = i+1)
+            {
+                while(j<100)
+                {
+                    
+                }
+            }
+        }
+        else
+        {
+            switch(2)
+            {
+                case 2:
+                a = 4;
+                default : 
+                b = 3;
+            }
+        }
+    }
+
+}
