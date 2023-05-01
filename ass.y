@@ -20,8 +20,7 @@
 // not handling else-if
 // function has to return
 
-s: global_statement s
-| func_def s
+s: func_def s
 |
 ;
 
@@ -33,12 +32,12 @@ expr_stmt : expr_stmt PL expr_stmt
      | expr_stmt MUL expr_stmt
      | expr_stmt DIV expr_stmt
      | expr_stmt MOD expr_stmt
-     | expr_stmt DEQ expr_stmt
-     | expr_stmt NEQ expr_stmt
+     | expr_stmt EQ EQ expr_stmt
+     | expr_stmt NOT EQ expr_stmt
      | expr_stmt LT expr_stmt
-     | expr_stmt LEQ expr_stmt
+     | expr_stmt LT EQ expr_stmt
      | expr_stmt GT expr_stmt
-     | expr_stmt GEQ expr_stmt
+     | expr_stmt GT EQ expr_stmt
      | expr_stmt AND expr_stmt
      | expr_stmt OR expr_stmt
      | MIN expr_stmt
@@ -76,8 +75,8 @@ init_stmt : VAR
           ;
 
 assign_stmt : VAR EQ expr_stmt
-         | VAR OS expr_stmt CS EQ expr_stmt
-         | VAR OS expr_stmt CS OS expr_stmt CS EQ expr_stmt
+         | VAR OS INTEGER CS EQ expr_stmt
+         | VAR OS INTEGER CS OS INTEGER CS EQ expr_stmt
 ;
 switch_list: SW OB expr_stmt CB OC cases_list CC
 ;
@@ -117,9 +116,6 @@ statement: decl_stmt SC
 | func_call
 ;
 
-global_statement: decl_stmt SC
-;
-
 jump_stmt :| RET
           | RET expr_stmt
           ;
@@ -130,18 +126,17 @@ func_def : ret_type VAR OB param_list CB comp_stmt
 ret_type : TYPE | VOID
          ;
 
-param_list : TYPE VAR
-           | TYPE VAR CM param_list
+param_list : TYPE val_list
+|
            ;
 
 func_call : VAR OB val_list CB
           ;
 
-val_list : expr_stmt 
-         | expr_stmt CM val_list
+val_list : VAR 
+         | VAR CM val_list
          ;
 %%
-
 
 void main(){
     FILE *fp; int i;
