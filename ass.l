@@ -116,6 +116,9 @@ identifier  {letter}({letter}|{digit})*
    yylval.fval = atof(yytext);
  return FLOATC;
 }
+<INITIAL>" " {}
+\r {}
+\t {}
 \n {linenumber++;}
-<<EOF>>  {printf("Number of valid printf statement %d\n",printfc);printf("Number of valid scanf statement %d\n",scanfc); return 0;}
+<<EOF>>  {printf("Number of valid printf statement %d\n",printfc);printf("Number of valid scanf statement %d\n",scanfc); return END;}
 %%
